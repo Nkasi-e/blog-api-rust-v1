@@ -23,6 +23,13 @@ struct GetPostModelSchema{
     pub image: String,
     pub user_id: i32,
     pub created_at: NaiveDateTime,
+    pub user: Option<UserModel>
+}
+
+#[derive(Serialize, Deserialize)]
+struct UserModel {
+    name: String,
+    email: String
 }
 
 
@@ -65,7 +72,8 @@ pub async fn my_post(
         image: post.image,
         text: post.text,
         title: post.title,
-        uuid: post.uuid
+        uuid: post.uuid,
+        user: None
     }).collect();
 
     let res_str = serde_json::to_string(&post)
@@ -89,7 +97,8 @@ pub async fn all_post(
         image: post.image,
         text: post.text,
         title: post.title,
-        uuid: post.uuid
+        uuid: post.uuid,
+        user: None
     }).collect();
 
 
@@ -108,19 +117,21 @@ pub async fn single_post(
 ) -> Result<ApiResponse, ApiResponse> {
     let post = entity::post::Entity::find()
         .filter(entity::post::Column::Uuid.eq(post_uuid.clone()))
+        .find_also_related(entity::user::Entity) // Left Join to connect the post and get the user information
         .one(&app_state.db)
         .await
         .map_err(|err| ApiResponse::new(500, err.to_string()))? // Handle DB errors
 
-    // Convert result into GetPostModelSchema and map it to ApiResponse
+    // Convert result into GetPostModelSchema and map it to ApiResponse (because of the join that returns a tupple we add 0)
     .map(|post| GetPostModelSchema {
-        id: post.id,
-        user_id: post.user_id,
-        created_at: post.created_at,
-        image: post.image,
-        text: post.text,
-        title: post.title,
-        uuid: post.uuid,
+        id: post.0.id,
+        user_id: post.0.user_id,
+        created_at: post.0.created_at,
+        image: post.0.image,
+        text: post.0.text,
+        title: post.0.title,
+        uuid: post.0.uuid,
+        user: post.1.map(|item| UserModel { name: item.name, email: item.email })
     })
     .ok_or_else(|| ApiResponse::new(404, "No post found".to_string()))?; // Handle empty result
 
