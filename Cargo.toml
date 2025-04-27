@@ -21,3 +21,11 @@ jsonwebtoken = "9.3.1" # For tokenization
 chrono = "0.4.40" # for date and time
 actix-web-lab = "0.24.1" # helps us create simple middleware
 once_cell = "1.21.3"
+watchexec = "6.0.0" # to watch changes on code like nodemon for node
+
+[dependencies.uuid]
+version = "1.16.0"
+# Lets you generate random UUIDs
+features = [
+    "v4",
+]

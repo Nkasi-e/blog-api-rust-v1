@@ -1,13 +1,13 @@
 use sea_orm_migration::{prelude::*, schema::*};
 
+use crate::m20250326_020445_create_user_table::User;
+
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
-        todo!();
 
         manager
             .create_table(
@@ -17,14 +17,16 @@ impl MigrationTrait for Migration {
                     .col(pk_auto(Post::Id))
                     .col(string(Post::Title))
                     .col(string(Post::Text))
+                    .col(uuid(Post::Uuid).unique_key().not_null())
+                    .col(string(Post::Image))
+                    .col(integer(Post::UserId).not_null()).foreign_key(ForeignKey::create().name("fk-posts-users-id").from(Post::Table, Post::UserId).to(User::Table, User::Id))
+                    .col(date_time(Post::CreatedAt).not_null())
                     .to_owned(),
             )
             .await
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
-        todo!();
 
         manager
             .drop_table(Table::drop().table(Post::Table).to_owned())
@@ -38,4 +40,8 @@ enum Post {
     Id,
     Title,
     Text,
+    Uuid,
+    Image,
+    UserId,
+    CreatedAt
 }

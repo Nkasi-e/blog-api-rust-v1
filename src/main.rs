@@ -39,6 +39,7 @@ async fn main() -> Result<(), MainError> {
         .configure(routes::home_routes::config) // routes
         .configure(routes::auth_routes::config)
         .configure(routes::user_routes::config)
+        .configure(routes::post_routes::config)
     })
     .bind((address, port))
     .map_err(|err| MainError { message: err.to_string() })?
@@ -46,58 +47,3 @@ async fn main() -> Result<(), MainError> {
     .await
     .map_err(|err| MainError { message: err.to_string() })
 }
-
-
-
-
-
-
-
-
-// use actix_web::{get, web, App, HttpServer, Responder, HttpResponse};
-// use std::io;
-
-// // Add error handling and logging
-// #[get("/hello/{name}")]
-// async fn greet(name: web::Path<String>) -> impl Responder {
-//     // Sanitize the input and handle potential edge cases
-//     let sanitized_name = name.trim();
-//     if sanitized_name.is_empty() {
-//         return HttpResponse::BadRequest().body("Name cannot be empty");
-//     }
-    
-//     // Return a proper HTTP response
-//     HttpResponse::Ok()
-//         .content_type("text/plain")
-//         .body(format!("Hello {}!", sanitized_name))
-// }
-
-// // Improved main function with better error handling
-// #[actix_web::main]
-// async fn main() -> io::Result<()> {
-//     // Initialize logging
-//     env_logger::init();
-    
-//     println!("Starting server at http://127.0.0.1:8080");
-    
-//     HttpServer::new(|| {
-//         App::new()
-//             .service(greet)
-//             // Add default service for unmatched routes
-//             .default_service(web::route().to(|| async { "404 Not Found" }))
-//     })
-//     .bind(("127.0.0.1", 8080))
-//     .map(|res| {
-//         res.map_err(|e| {
-//             eprintln!("Server error: {}", e);
-//             e
-//         })
-//     })?
-//     .run()
-//     .await
-// }
-
-
-// fn main() {
-//     println!("Hello, world!");
-// }

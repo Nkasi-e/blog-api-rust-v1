@@ -1,18 +1,33 @@
+use std::future::{ready, Ready};
+use actix_web::{FromRequest, HttpMessage};
 use chrono::{Duration, Utc};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, TokenData, Validation};
 use serde::{Deserialize, Serialize};
 
 use super::constants;
 
-
-
-// Date stored in our jwt
-#[derive(Serialize, Deserialize)]
+// Data stored in our jwt
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Claims {
     pub exp: usize, // expiry time for the token
     pub iat: usize, // time the token was created
     pub email: String,
-    pub id: i32
+    pub id: i32,
+}
+
+impl FromRequest for Claims {
+    type Error = actix_web::Error;
+    type Future = Ready<Result<Self, Self::Error>>;
+
+    fn from_request(
+        req: &actix_web::HttpRequest,
+        _payload: &mut actix_web::dev::Payload,
+    ) -> Self::Future {
+        match req.extensions().get::<Claims>() {
+            Some(claim) => ready(Ok(claim.clone())),
+            None => ready(Err(actix_web::error::ErrorBadRequest("Bad Request Token"))),
+        }
+    }
 }
 
 // encoding jwt
