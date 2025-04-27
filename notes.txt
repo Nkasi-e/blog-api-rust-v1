@@ -1,6 +1,9 @@
 To create a new migration use the command below for sea-orm
 sea-orm-cli migrate generate [Table name]
 
+e.g sea-orm-cli migrate generate add_created_at__to_post
+
+
 
 use the command below to initialise sea-orm-cli migration
 sea-orm-cli migrate init
@@ -9,7 +12,7 @@ use the command to run the sea-orm migration
 sea-orm-cli migrate up
 migrate fresh removes all the existing table and then re-run the migration
 
-to generate entity us the command, Note that you manually create Cargo.toml file for the entity
+to generate entity use the command, Note that you manually create Cargo.toml file for the entity
 # Generate entity files of database `bakery` to `entity/src`
 sea-orm-cli generate entity -u protocol://username:password@localhost/bakery -o entity/src
 You can remove "-u protocol://username:password@localhost/bakery" if you already have that set as an env var

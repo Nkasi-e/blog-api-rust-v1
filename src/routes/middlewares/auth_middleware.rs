@@ -4,6 +4,7 @@ use actix_web::{
     http::header::AUTHORIZATION,
     middleware::Next,
     Error, HttpResponse,
+    HttpMessage
 };
 
 use crate::utils::jwt::decode_jwt;
@@ -28,8 +29,8 @@ pub async fn check_auth_middleware(
     let token = auth.unwrap().to_str().unwrap().trim_start_matches("Bearer ").to_owned();
     match decode_jwt(token) {
         Ok(claim) => {
-            // You can store claim in request extensions if needed
-            // req.extensions_mut().insert(claim);
+            // You can store claim in request extensions if needed yes
+            req.extensions_mut().insert(claim.claims);
             next.call(req).await
         }
         Err(_) => {
