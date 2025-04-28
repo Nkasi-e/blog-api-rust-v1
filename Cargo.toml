@@ -22,6 +22,8 @@ chrono = "0.4.40" # for date and time
 actix-web-lab = "0.24.1" # helps us create simple middleware
 once_cell = "1.21.3"
 watchexec = "6.0.0" # to watch changes on code like nodemon for node
+actix-multipart = "0.7.2" # handles image upload
+sanitize-filename = "0.6.0"
 
 [dependencies.uuid]
 version = "1.16.0"
