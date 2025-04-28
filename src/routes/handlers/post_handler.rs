@@ -1,10 +1,11 @@
+use actix_multipart::form::{tempfile::TempFile, MultipartForm, text::Text};
 use actix_web::{post, web, get};
 use chrono::{NaiveDateTime, Utc};
 use sea_orm::{ActiveValue::Set, EntityTrait, ActiveModelTrait, QueryFilter, ColumnTrait};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::utils::{api_response::ApiResponse, app_state, jwt::Claims};
+use crate::utils::{self, api_response::ApiResponse, app_state, jwt::Claims};
 
 
 #[derive(Serialize, Deserialize)]
@@ -13,6 +14,14 @@ struct CreatePostModelSchema{
     text: String,
     image: String,
 }
+
+
+// #[derive(MultipartForm)]
+// struct CreatePostModelSchema{
+//     title: Text<String>,
+//     text: Text<String>,
+//     image: TempFile,
+// }
 
 #[derive(Serialize, Deserialize)]
 struct GetPostModelSchema{
@@ -38,7 +47,28 @@ pub async fn create_post(
     app_state: web::Data<app_state::AppState>, 
     claim_data: Claims, 
     post_model: web::Json<CreatePostModelSchema>
+    // post_model: MultipartForm<CreatePostModelSchema> // to accept image upload
 ) -> Result<ApiResponse, ApiResponse> {
+
+
+    // let check_name = post_model.file.file_name.clone().unwrap_or("null".to_owned());
+    // let max_file_size = (*utils::constants::MAX_FILE_SIZE).clone();
+
+    // match &check_name[check_name.len() - 4 ..] {
+    //     ".png" | ".jpg" => {},
+    //     _ => {
+    //         return  Err(ApiResponse::new(401, "Invalid file type".to_owned()))
+    //     }
+    // }
+
+    // match post_model.file.size {
+    //     0 => {
+    //         return  Err(ApiResponse::new(401, "Invalid file type".to_owned()))
+    //     },
+    //     length: if length > max_file_size => {
+    //         return  Err(ApiResponse::new(401, "file too big".to_owned()))
+    //     }
+    // }
 
     let post_entity = entity::post::ActiveModel {
         title: Set(post_model.title.clone()),
@@ -141,3 +171,5 @@ pub async fn single_post(
 
     Ok(ApiResponse::new(200, res_str))
 }
+
+
